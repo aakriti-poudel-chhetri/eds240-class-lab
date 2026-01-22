@@ -1,0 +1,65 @@
+---
+title: "Data wrangling with the {tidyverse}"
+format: html
+editor: visual
+---
+
+## Week 1 Discussion: Exercise
+
+### Data wrangling with the `{tidyverse}`
+
+##### Thursday January 8^th^, 2026
+
+#### Load library
+
+```{r}
+library(janitor)
+library(tidyverse)
+library(ggplot2)
+```
+
+### Import Data
+
+```{r}
+stressor <- read_csv(here::here("data", "week1data", "stressor.csv"))
+```
+
+### Explore Data
+
+```{r}
+# Check class of year variable
+lapply(stressor_clean, class)
+```
+
+### Clean Data
+
+```{r}
+# Remove all special characters in the state and stressor columns
+stressor_clean <- stressor %>% 
+  clean_names() %>%
+  mutate(state = str_remove_all(state, "[^a-zA-Z ]"),
+         stressor = str_remove_all(stressor, "[^a-zA-Z ]"))
+         # year = as.numeric(year)) # Change year to the numeric
+
+```
+
+### Change dataframe
+
+```{r}
+# Pivot the data frame to look it tidy
+
+# Convert data frame from wide to longer
+stressor_df <- stressor_clean %>% 
+  pivot_longer(cols = c("january_march",
+                        "april_june",
+                        "july_september",
+                        "october_december"),
+               names_to = "months",
+               values_to = "stress_pct") %>% 
+  drop_na()
+```
+
+```{r}
+# Create 
+
+```

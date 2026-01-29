@@ -1,0 +1,112 @@
+---
+title: "Make a plot!!"
+author: "Aakriti Poudel"
+format: html
+editor: visual
+---
+
+# Load all necessary libraries
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(dplyr)
+library(emojifont)
+
+```
+
+# Read data
+
+```{r}
+palm_trees <- read_csv(here::here("data", "week4data", "palmtrees.csv")) %>% 
+  clean_names()
+```
+```{r}
+ggplot(palm_trees, aes(x = palm_subfamily, y = max_stem_height_m)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+```{r}
+ggplot(palm_trees, aes(x = palm_subfamily, y = max_stem_height_m)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+```{r}
+unique(palm_trees$climbing)
+```
+
+```{r}
+palm_trees_climb <- palm_trees %>%
+  group_by(palm_subfamily, climbing) %>% 
+  summarise(count = n())
+
+palm_trees_climb
+```
+
+```{r}
+palm_trees_climb_df <- palm_trees %>%
+  filter(climbing == "climbing") %>% 
+  group_by(palm_subfamily, climbing) %>% 
+  summarise(count = n())
+
+palm_trees_climb_df
+```
+
+```{r}
+load.fontawesome()
+
+palm_pictorial <- palm_trees_climb_df %>%
+  mutate(count_scaled = round(count / 50)) %>%
+  uncount(count_scaled) %>%
+  group_by(palm_subfamily) %>%
+  mutate(x = (row_number() - 1) %% 15, y = palm_subfamily)
+
+ggplot(palm_pictorial, aes(x = x, y = y, color = palm_subfamily)) +
+  geom_text(label = fontawesome("fa-male"),
+            family = "fontawesome-webfont",
+            size = 10) +
+  scale_color_manual(values = c("Arecoideae" = "#c0392b",
+                                "Calamoideae" = "#e74c3c",
+                                "Ceroxyloideae" = "#d35400",
+                                "Coryphoideae" = "#e67e22",
+                                "Nypoideae" = "#f39c12")) +
+  theme_void() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 12, face = "bold", hjust = 1),
+        plot.margin = margin(20, 20, 20, 20)) +
+  labs(title = "People climbing palm trees",
+       caption = "1:50 ratio")
+```
+
+
+
+```{r}
+load.fontawesome()
+
+# subset
+palm_pictorial <- palm_trees_climb_df %>%
+  mutate(count_scaled = round(count / 50)) %>%
+  uncount(count_scaled) %>%
+  group_by(palm_subfamily) %>%
+  mutate(x = (row_number() - 1) %% 15, y = palm_subfamily)
+
+# create a ggplot
+ggplot(palm_pictorial, aes(x = x, y = y, color = palm_subfamily)) +
+  geom_text(label = fontawesome("fa-tree"),
+            family = "fontawesome-webfont",
+            size = 10) +
+  scale_color_manual(values = c("Arecoideae" = "#6D9AD3",
+                                "Calamoideae" = "#756460",
+                                "Ceroxyloideae" = "#4A6902",
+                                "Coryphoideae" = "#816E39",
+                                "Nypoideae" = "#f39c12")) +
+  theme_void() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 11, face = "bold", hjust = 1),
+        plot.margin = margin(20, 20, 20, 20)) +
+  labs(title = "Climbing palm trees",
+       caption = "1 tree = 50 observation")
+```
+
